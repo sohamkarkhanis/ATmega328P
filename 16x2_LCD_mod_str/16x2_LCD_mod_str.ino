@@ -8,33 +8,34 @@
 #define D7 2
 
 
-void lcdwrite(char *data_l) //*data_l is a pointer because we don't know the length of the input string. Can also simply make it [32] if working on a 16x2 lcd
-{
+void lcdwrite(char *data_l){   //*data_l is a pointer because we don't know the length of the input string. Can also simply make it [32] if working on a 16x2 lcd
+
   char data;
   int len=strlen(data_l);
+  
    for(int i=0;i<len;i++){
-    if(i==16){lcdcmdwrite(0xC0);} //wrap text functionality
-    
-    data=data_l[i];
-   
-    digitalWrite(RS, 1);      //Change RS for data
-    digitalWrite(D4, (data & 0b00010000) >> 4);   //I have written the code using binary numbers since it is much easier for people new to coding to visualise the bit shift, replace the giant binary number with smaller hexadecimal numbers to simplify your code
-    digitalWrite(D5, (data & 0b00100000) >> 5);   // for eg, replace 0b00100000 with 0x20
-    digitalWrite(D6, (data & 0b01000000) >> 6);
-    digitalWrite(D7, (data & 0b10000000) >> 7);
-    digitalWrite(E, HIGH);
-    digitalWrite(E, LOW);
-    digitalWrite(D4, (data & 0b00000001) >> 0);
-    digitalWrite(D5, (data & 0b00000010) >> 1);
-    digitalWrite(D6, (data & 0b00000100) >> 2);
-    digitalWrite(D7, (data & 0b00001000) >> 3);
-    digitalWrite(E, HIGH);
-    digitalWrite(E, LOW);
-  }
-}
+     
+     if(i==16){lcdcmdwrite(0xC0);} //wrap text functionality
+     data=data_l[i];
 
-void lcdcmdwrite(char data)
-{
+     digitalWrite(RS, 1);      //Change RS for data
+     digitalWrite(D4, (data & 0b00010000) >> 4);   //I have written the code using binary numbers since it is much easier for people new to coding to visualise the bit shift, replace the giant binary number with smaller hexadecimal numbers to simplify your code
+     digitalWrite(D5, (data & 0b00100000) >> 5);   // for eg, replace 0b00100000 with 0x20
+     digitalWrite(D6, (data & 0b01000000) >> 6);
+     digitalWrite(D7, (data & 0b10000000) >> 7);
+     digitalWrite(E, HIGH);
+     digitalWrite(E, LOW);
+     digitalWrite(D4, (data & 0b00000001) >> 0);
+     digitalWrite(D5, (data & 0b00000010) >> 1);
+     digitalWrite(D6, (data & 0b00000100) >> 2);
+     digitalWrite(D7, (data & 0b00001000) >> 3);
+     digitalWrite(E, HIGH);
+     digitalWrite(E, LOW);
+  }
+}                                                  //to understand the bit shifting, assume a 8-bit ASCII value for any character and see what happens! 
+                                                   // we basically OR each individual data bit of the ASCII value, bit shift it to get it to the LSB and write it to the LCD's data pin
+void lcdcmdwrite(char data){
+  
     digitalWrite(RS, 0);     //Change RS for command
     digitalWrite(D4, (data & 0b00010000) >> 4);
     digitalWrite(D5, (data & 0b00100000) >> 5);
@@ -51,8 +52,7 @@ void lcdcmdwrite(char data)
   
 }
 
-void lcd_ini()
-{
+void lcd_ini(){
   
   //lcdwrite(0, 0x33);
   //delay(15);
@@ -84,9 +84,8 @@ void setup() {
   pinMode(12,OUTPUT);
   
 
-  lcd_ini();
-
-  lcdwrite("helo");
+  lcd_ini();          //initiates the lcd with the commands found in the datasheet of hd44780, refer to page 24 for further details
+  lcdwrite("helo");  //now we can directly input a string parameter instead of one character at a time
 
 }
 
